@@ -1,0 +1,31 @@
+html {
+  scroll-behavior: smooth;
+}
+
+/* font syntax highlighting */
+@font-face {
+  font-family: "Monaspace";
+  src: url("./fonts/syntax-highlight.woff2") format("woff2");
+}
+
+@font-palette-values --kung-fury {
+  font-family: "Monaspace";
+  override-colors: 0 #c8d2ef /* curlies and tags */, 1 hsl(250 100% 80%) /* ? */, 2
+    #acbbe7 /* function */, 3 hsl(188 100% 75%) /* ? */, 4 #ff7777 /* () */, 5
+    #fff /* property name */, 6 hsl(210 40% 80%) /* ? */, 7 #fda4a4 /* numbers */, 8
+    #f3f4f6 /* angle brackets */;
+}
+
+pre > code {
+  font-family: "Monaspace", monospace;
+  font-palette: --kung-fury;
+  border: none !important;
+  background: transparent !important;
+  color: white !important;
+}
+
+pre {
+  min-width: 0;
+  overflow-x: auto;
+  padding: 2ch;
+}

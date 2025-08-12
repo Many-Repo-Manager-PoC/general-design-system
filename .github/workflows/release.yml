@@ -1,0 +1,93 @@
+# This workflow will release the packages with Changesets
+
+name: 🚀 Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: 🚀 Release
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [lts/*]
+        pnpm-version: [latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: ⬇️ Checkout
+        id: checkout
+        uses: actions/checkout@v2.3.3
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup node
+        id: setup-node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: 🥡 Setup pnpm
+        id: setup-pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ${{ matrix.pnpm-version }}
+          run_install: false
+
+      - name: 🎈 Get pnpm store directory
+        id: get-pnpm-cache-dir
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 🔆 Cache pnpm
+        uses: actions/cache@v3
+        id: pnpm-cache
+        with:
+          path: ${{ steps.get-pnpm-cache-dir.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 🧩 Install Dependencies
+        id: install-dependencies
+        run: pnpm install
+
+      - name: 🏗️ Build
+        id: build-the-mono-repo
+        run: pnpm build
+
+      - name: 📊 Generate changeset data and determine next version
+        id: generate-changeset
+        run: |
+          pnpm changeset status --output=release.json
+          echo "NEW_VERSION=$(jq -r '.releases[0].newVersion' release.json)" >> $GITHUB_ENV
+          CHANGESET_DATA=$(jq -c . release.json)
+          echo "changeset_data=$CHANGESET_DATA" >> $GITHUB_OUTPUT
+          rm release.json
+
+      - name: 📣 Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          title: "Release General Design v${{ env.NEW_VERSION }}"
+          publish: pnpm publish:packages
+          version: pnpm version:packages
+          commit: "feat: Release General Design v${{ env.NEW_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 💥 Create Linear Release Issue
+        if: steps.changesets.outputs.pullRequestNumber
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          PR_TITLE: "Release General Design v${{ env.NEW_VERSION }}"
+          CHANGESET_DATA: ${{ steps.generate-changeset.outputs.changeset_data }}
+          PR_NUMBER: ${{ steps.changesets.outputs.pullRequestNumber }}
+        run: pnpm tsx .github/scripts/update-linear.ts
+

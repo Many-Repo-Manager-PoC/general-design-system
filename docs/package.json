@@ -1,0 +1,37 @@
+{
+  "name": "general-design-system-docs",
+  "description": "General Design System Docuemntation",
+  "engines": {
+    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+  },
+  "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
+  "private": true,
+  "trustedDependencies": ["sharp"],
+  "trustedDependencies-annotation": "Needed for bun to allow running install scripts",
+  "type": "module",
+  "scripts": {
+    "build": "qwik build",
+    "build.client": "vite build",
+    "build.preview": "vite build --ssr src/entry.preview.tsx",
+    "build.server": "vite build -c adapters/static/vite.config.ts",
+    "build.types": "tsc --incremental --noEmit",
+    "dev": "vite --mode ssr --host",
+    "preview": "qwik build preview && vite preview --open",
+    "start": "vite --open --mode ssr",
+    "qwik": "qwik"
+  },
+  "devDependencies": {
+    "general-design-system": "workspace:*",
+    "@qwikest/icons": "0.0.13",
+    "@tailwindcss/vite": "4.1.8",
+    "@types/estree-jsx": "1.0.5",
+    "typescript": "5.3.3",
+    "undici": "*",
+    "unified": "11.0.4",
+    "vite": "^7.1",
+    "vite-tsconfig-paths": "5.1.4",
+    "@kunai-consulting/qwik": "0.2",
+    "@qwik.dev/router": "2.0.0-beta.7",
+    "@qwik.dev/core": "2.0.0-beta.7"
+  }
+}

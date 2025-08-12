@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@source "../components/**/*";
+
+@layer qwik-ui, popover-polyfill, qds, theme, base, utilities, components;
+
+/* add tailwind v4 @theme, other tokens, etc. */

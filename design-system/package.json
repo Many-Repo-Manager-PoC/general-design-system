@@ -1,0 +1,49 @@
+{
+  "name": "general-design-system",
+  "version": "0.0.0",
+  "description": "General Design System",
+  "main": "./lib/index.qwik.mjs",
+  "qwik": "./lib/index.qwik.mjs",
+  "types": "./lib-types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/index.qwik.mjs",
+      "require": "./lib/index.qwik.cjs",
+      "types": "./lib-types/index.d.ts"
+    },
+    "./theme": "./lib/assets/theme.css"
+  },
+  "files": ["lib", "lib-types"],
+  "engines": {
+    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+  },
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "build": "qwik build",
+    "build.lib": "vite build --mode lib",
+    "build.types": "tsc --emitDeclarationOnly",
+    "dev": "vite --mode ssr",
+    "start": "vite --open --mode ssr",
+    "qwik": "qwik",
+    "fast-release": "bumpp && pnpm publish"
+  },
+  "devDependencies": {
+    "@types/node": "22.12",
+    "bumpp": "^10.2.0",
+    "typescript": "5.4.5",
+    "undici": "*",
+    "vite": "^7.1",
+    "vite-tsconfig-paths": "5.1.4",
+    "@qwik.dev/core": "2.0.0-beta.7"
+  },
+  "dependencies": {
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "tailwind-merge": "3.0.2",
+    "tailwindcss": "4.1.8"
+  },
+  "peerDependencies": {
+    "@tailwindcss/vite": "4.1.8"
+  }
+}
